@@ -1,7 +1,7 @@
 # --- Stage 1: Build Unity Project ---
 # LƯU Ý: Thay đổi phiên bản 2022.3.10f1 thành phiên bản chính xác project bạn đang dùng
 # Xem phiên bản tại ProjectSettings/ProjectVersion.txt
-FROM unityci/editor:6000.0.64f1-webgl-1 AS builder
+FROM unityci/editor:6000.0.64f1-webgl-3 AS builder
 
 # 1. Thiết lập thư mục làm việc
 WORKDIR /project
