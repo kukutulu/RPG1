@@ -294,7 +294,6 @@ MonoBehaviour:
   healthBar: {fileID: 1695659797}
   health: 0
   maxHealth: 5
-  deathDelay: 1
 --- !u!58 &353346484
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -869,6 +868,12 @@ MonoBehaviour:
   health: 5
   maxHealth: 5
   maxTotalHealth: 30
+  weaponRange: 0.5
+  damage: 1
+  cooldown: 0.5
+  knockbackForce: 2
+  stunTime: 1
+  speed: 5
 --- !u!95 &720682327
 Animator:
   serializedVersion: 7
@@ -905,12 +910,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 720682327}
   attackPoint: {fileID: 1183025822}
-  weaponRange: 1.2
-  damage: 1
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
-  cooldown: 0.5
 --- !u!114 &720682329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -926,7 +928,6 @@ MonoBehaviour:
   animator: {fileID: 720682327}
   playerCombat: {fileID: 720682328}
   sword: {fileID: 1183025824}
-  speed: 5
 --- !u!70 &720682330
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

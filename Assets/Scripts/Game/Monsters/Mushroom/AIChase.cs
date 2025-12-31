@@ -23,7 +23,7 @@ public class AIChase : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        rb= GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         if (animator == null)
             animator = GetComponent<Animator>();
         if (animator != null)
@@ -35,47 +35,14 @@ public class AIChase : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ChasePlayer()
     {
-        //distance = Vector2.Distance(transform.position, player.transform.position);
-        //Vector2 direction = player.transform.position - transform.position;
-        //direction.Normalize();
-
-        //if (distance < chaseRange)
-        //{
-        //    transform.position = Vector2.MoveTowards(this.transform.position, player.transform.position, speed * Time.deltaTime);
-        //    if (animator != null)
-        //        animator.SetBool("isNearPlayer", true);
-
-        //    // Check if close enough to attack
-        //    if (distance < attackRange)
-        //    {
-        //        if (animator != null)
-        //            animator.SetBool("isNormalAttack", true);
-        //    }
-        //    else
-        //    {
-        //        if (animator != null)
-        //            animator.SetBool("isNormalAttack", false);
-        //    }
-
-        //    // Flip to face player
-        //    float horizontal = player.transform.position.x - transform.position.x;
-        //    Flip(horizontal);
-        //}
-
-        ChasePlayer();
-    }
-
-    private void ChasePlayer()
-    {
-        if(isChasing)
+        if (isChasing)
         {
             float distance = Vector2.Distance(transform.position, curPlayer.transform.position);
             if (distance <= attackRange)
             {
-                 animator.SetBool("isNormalAttack", true);
+                animator.SetBool("isNormalAttack", true);
             }
             else
             {
@@ -93,7 +60,7 @@ public class AIChase : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player")
         {
             if (curPlayer == null)
             {

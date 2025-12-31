@@ -6,12 +6,7 @@ public class PlayerCombat : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public Animator animator;
     public Transform attackPoint;
-    public float weaponRange = 1;
-    public float damage = 1;
     public LayerMask enemyLayer;
-
-
-    [SerializeField] private float cooldown = 0.5f;
     private float timer;
 
     private void Update()
@@ -27,15 +22,20 @@ public class PlayerCombat : MonoBehaviour
         if (timer <= 0)
         {
             animator.SetBool("isAttack", true);
-            Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, weaponRange, enemyLayer);
+            Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, PlayerStats.Instance.WeaponRange, enemyLayer);
 
             if (hits.Length > 0)
             {
-                hits[0].GetComponent<Monster>().TakeDamage(damage);
-                // hits[0].GetComponent<Player>().Knockback(transform, knockbackForce, stunTime);
+                foreach (var hit in hits)
+                {
+                    if (hit is CapsuleCollider2D)
+                    {
+                        hit.GetComponent<Monster>().TakeDamage(PlayerStats.Instance.Damage);
+                        hit.GetComponent<Monster>().Knockback(transform, PlayerStats.Instance.KnockbackForce, PlayerStats.Instance.StunTime);
+                    }
+                }
             }
-
-            timer = cooldown;
+            timer = PlayerStats.Instance.Cooldown;
         }
     }
 

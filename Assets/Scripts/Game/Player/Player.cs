@@ -8,8 +8,6 @@ public class Player : MonoBehaviour
     public PlayerCombat playerCombat;
     public SwordHitbox sword;
 
-    [SerializeField]
-    private float speed = 5;
     private float x;
     private float y;
     private bool isRun = false;
@@ -42,7 +40,7 @@ public class Player : MonoBehaviour
     {
         x = Input.GetAxis("Horizontal");
         y = Input.GetAxis("Vertical");
-        rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal") * speed, Input.GetAxis("Vertical") * speed);
+        rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal") * PlayerStats.Instance.Speed, Input.GetAxis("Vertical") * PlayerStats.Instance.Speed);
 
         sword.UpdatePosition(new Vector2(
             Input.GetAxisRaw("Horizontal"),
@@ -73,8 +71,8 @@ public class Player : MonoBehaviour
     public void Knockback(Transform enemy, float force, float stunTime)
     {
         isKnockback = true;
-        Vector2 dirasdasd = (transform.position - enemy.position).normalized;
-        rb.linearVelocity = dirasdasd * force;
+        Vector2 dir = (transform.position - enemy.position).normalized;
+        rb.linearVelocity = dir * force;
         StartCoroutine(KnockbackCounter(stunTime));
     }
 
