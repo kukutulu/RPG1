@@ -54,8 +54,6 @@ public class Monster : MonoBehaviour
     void Die()
     {
         isDead = true;
-        Debug.Log("Monster Died");
-
         // Destroy after animation plays
         animator.SetBool("isDead", true);
 
