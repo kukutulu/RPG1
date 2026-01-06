@@ -7,9 +7,13 @@ public class Monster : MonoBehaviour
     public Animator animator;
     [SerializeField] HealthBar healthBar;
     [SerializeField] private float health, maxHealth = 5f;
+    [SerializeField] private float exp = 50f;
     private bool isKnockback = false;
     private bool isDead = false;
     private AIChase AIChase;
+
+    public delegate void MonsterDead(float exp);
+    public static event MonsterDead OnMonsterDead;
 
     private void Awake()
     {
@@ -47,6 +51,7 @@ public class Monster : MonoBehaviour
         healthBar.UpdateHealthBar(health, maxHealth);
         if (health <= 0)
         {
+            OnMonsterDead(exp);
             Die();
         }
     }

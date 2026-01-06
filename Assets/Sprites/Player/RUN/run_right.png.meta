@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 20653362c97ed914fb8e2c500a13ff23
+guid: 11a877c3a3a5dda4792d8cb303ad5196
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -639016909152822417
-    second: idle_up_0
+      213: -5048119997888784150
+    second: run_right_0
   - first:
-      213: -7660712862888677055
-    second: idle_up_1
+      213: 1501806831170361822
+    second: run_right_1
   - first:
-      213: -2801625992821860700
-    second: idle_up_2
+      213: 7040184271975629172
+    second: run_right_2
   - first:
-      213: -7262585456254638847
-    second: idle_up_3
+      213: -7604150851027835787
+    second: run_right_3
   - first:
-      213: -1862283806931543833
-    second: idle_up_4
+      213: -7224934428991300267
+    second: run_right_4
   - first:
-      213: 8023497310580783721
-    second: idle_up_5
+      213: -7815436938264237959
+    second: run_right_5
   - first:
-      213: -1666585021586401484
-    second: idle_up_6
+      213: -8388138545713766448
+    second: run_right_6
   - first:
-      213: 3678552267812631876
-    second: idle_up_7
+      213: 5040382853412268526
+    second: run_right_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -117,17 +117,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: idle_up_0
+      name: run_right_0
       rect:
         serializedVersion: 2
-        x: 39
-        y: 21
-        width: 19
-        height: 36
+        x: 0
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,20 +149,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f6b5a7cb181c127f0800000000000000
-      internalID: -639016909152822417
+      spriteID: ae81b46ab9971f9b0800000000000000
+      internalID: -5048119997888784150
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_1
+      name: run_right_1
       rect:
         serializedVersion: 2
-        x: 134
-        y: 21
-        width: 20
-        height: 35
+        x: 96
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +171,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 14131494d3eafa590800000000000000
-      internalID: -7660712862888677055
+      spriteID: ed91a252b5d77d410800000000000000
+      internalID: 1501806831170361822
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_2
+      name: run_right_2
       rect:
         serializedVersion: 2
-        x: 230
-        y: 21
-        width: 20
-        height: 34
+        x: 192
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -180,20 +193,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a61a50d000ae19d0800000000000000
-      internalID: -2801625992821860700
+      spriteID: 471466c7b42c3b160800000000000000
+      internalID: 7040184271975629172
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_3
+      name: run_right_3
       rect:
         serializedVersion: 2
-        x: 326
-        y: 21
-        width: 20
-        height: 34
+        x: 288
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -202,20 +215,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1052601a10d163b90800000000000000
-      internalID: -7262585456254638847
+      spriteID: 574600ae611a87690800000000000000
+      internalID: -7604150851027835787
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_4
+      name: run_right_4
       rect:
         serializedVersion: 2
-        x: 423
-        y: 21
-        width: 19
-        height: 34
+        x: 384
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -224,20 +237,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7e812e09eb6d726e0800000000000000
-      internalID: -1862283806931543833
+      spriteID: 55ddb7a8a60ebbb90800000000000000
+      internalID: -7224934428991300267
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_5
+      name: run_right_5
       rect:
         serializedVersion: 2
-        x: 519
-        y: 21
-        width: 19
-        height: 34
+        x: 480
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -246,20 +259,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 96a387d2b40395f60800000000000000
-      internalID: 8023497310580783721
+      spriteID: 9782b4a338df98390800000000000000
+      internalID: -7815436938264237959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_6
+      name: run_right_6
       rect:
         serializedVersion: 2
-        x: 615
-        y: 21
-        width: 19
-        height: 35
+        x: 576
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -268,20 +281,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4371b58b0c91fd8e0800000000000000
-      internalID: -1666585021586401484
+      spriteID: 0df18f75f68579b80800000000000000
+      internalID: -8388138545713766448
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_up_7
+      name: run_right_7
       rect:
         serializedVersion: 2
-        x: 711
-        y: 21
-        width: 19
-        height: 36
+        x: 672
+        y: 0
+        width: 96
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -290,8 +303,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 445fdaa3cc7dc0330800000000000000
-      internalID: 3678552267812631876
+      spriteID: ee9ab95008903f540800000000000000
+      internalID: 5040382853412268526
       vertices: []
       indices: 
       edges: []
@@ -300,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: fd6e3a4c9251b024ab3649c56d8b536d
     internalID: 0
     vertices: []
     indices: 
@@ -310,14 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      idle_up_0: -639016909152822417
-      idle_up_1: -7660712862888677055
-      idle_up_2: -2801625992821860700
-      idle_up_3: -7262585456254638847
-      idle_up_4: -1862283806931543833
-      idle_up_5: 8023497310580783721
-      idle_up_6: -1666585021586401484
-      idle_up_7: 3678552267812631876
+      run_right_0: -5048119997888784150
+      run_right_1: 1501806831170361822
+      run_right_2: 7040184271975629172
+      run_right_3: -7604150851027835787
+      run_right_4: -7224934428991300267
+      run_right_5: -7815436938264237959
+      run_right_6: -8388138545713766448
+      run_right_7: 5040382853412268526
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
