@@ -8,7 +8,6 @@ public class HealthBar : MonoBehaviour
     public void UpdateHealthBar(float currentHealth, float maxHealth)
     {
         slider.value = currentHealth / maxHealth;
-        Debug.Log("Health Bar Updated: " + slider.value);
     }
     
     // Update is called once per frame

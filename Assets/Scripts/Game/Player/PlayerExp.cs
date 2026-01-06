@@ -1,0 +1,56 @@
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
+public class PlayerExp : MonoBehaviour
+{
+    public float level = 1;
+    public float currentExp = 0;
+    public float requiredExp = 100;
+    public float expMultiplier = 1.2f;
+    public Slider slider;
+    public TMP_Text levelText;
+
+
+    private void OnEnable()
+    {
+        Monster.OnMonsterDead += GainExp;
+    }
+
+    private void OnDisable()
+    {
+        Monster.OnMonsterDead -= GainExp;
+    }
+
+
+    private void Update()
+    {
+        slider.value = currentExp / requiredExp;
+        levelText.text = "Level: " + level;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            GainExp(10);
+        }
+    }
+
+    public void LevelUp()
+    {
+        level++;
+        requiredExp = (requiredExp * expMultiplier);
+        currentExp = 0;
+        slider.value = currentExp / requiredExp;
+        levelText.text = "Level: " + level;
+    }
+
+    public void GainExp(float exp)
+    {
+        currentExp += exp;
+        if (currentExp >= requiredExp)
+        {
+            LevelUp();
+        }
+    }
+
+
+}
