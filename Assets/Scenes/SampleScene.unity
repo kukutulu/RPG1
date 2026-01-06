@@ -385,8 +385,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -58.9, y: 47.6}
-  m_SizeDelta: {x: 135, y: 16}
+  m_AnchoredPosition: {x: -94.7, y: 58.7}
+  m_SizeDelta: {x: 53.79085, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &297324075
 MonoBehaviour:
@@ -665,8 +665,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.009467125, y: -0.4820416}
-  m_Size: {x: 0.8420725, y: 0.95142984}
+  m_Offset: {x: -0.009467125, y: -0.5132698}
+  m_Size: {x: 0.4950924, y: 0.8889735}
   m_Direction: 0
 --- !u!50 &353346487
 Rigidbody2D:
@@ -1018,7 +1018,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 3.05
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -10876,7 +10876,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 34
-    OrthographicSize: 3.05
+    OrthographicSize: 4
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
