@@ -3,11 +3,17 @@ using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public Animator animator;
+    
     public Transform attackPoint;
     public LayerMask enemyLayer;
+    AudioManager audioManager;
     private float timer;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
 
     private void Update()
     {
@@ -30,6 +36,7 @@ public class PlayerCombat : MonoBehaviour
                 {
                     if (hit is CapsuleCollider2D)
                     {
+                        audioManager.PlaySFX(audioManager.playerHit);
                         hit.GetComponent<Monster>().TakeDamage(PlayerStats.Instance.Damage);
                         hit.GetComponent<Monster>().Knockback(transform, PlayerStats.Instance.KnockbackForce, PlayerStats.Instance.StunTime);
                     }

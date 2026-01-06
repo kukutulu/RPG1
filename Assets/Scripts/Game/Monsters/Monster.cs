@@ -49,6 +49,7 @@ public class Monster : MonoBehaviour
 
         health -= damageAmount;
         healthBar.UpdateHealthBar(health, maxHealth);
+        StartCoroutine(PlayHurtAnimation());
         if (health <= 0)
         {
             OnMonsterDead(exp);
@@ -85,5 +86,12 @@ public class Monster : MonoBehaviour
         yield return new WaitForSeconds(stunTime);
         rb.linearVelocity = Vector2.zero;
         isKnockback = false;
+    }
+
+    IEnumerator PlayHurtAnimation()
+    {
+    animator.SetBool("isHurt", true);
+    yield return new WaitForSeconds(0.5f);
+    animator.SetBool("isHurt", false);
     }
 }
