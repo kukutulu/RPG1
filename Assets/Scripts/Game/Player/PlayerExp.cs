@@ -10,11 +10,16 @@ public class PlayerExp : MonoBehaviour
     public float expMultiplier = 1.2f;
     public Slider slider;
     public TMP_Text levelText;
-
+    AudioManager audioManager;
 
     private void OnEnable()
     {
         Monster.OnMonsterDead += GainExp;
+    }
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
     }
 
     private void OnDisable()
@@ -36,6 +41,7 @@ public class PlayerExp : MonoBehaviour
 
     public void LevelUp()
     {
+        audioManager.PlaySFX(audioManager.powerUp);
         level++;
         requiredExp = (requiredExp * expMultiplier);
         currentExp = 0;
