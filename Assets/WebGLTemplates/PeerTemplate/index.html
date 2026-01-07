@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Unity WebGL with PeerJS</title>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #1b1b1b;
+        }
+
+        #unity-container {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        #unity-canvas {
+            width: 100%;
+            height: 100%;
+            background: #231F20;
+        }
+
+        #unity-loading-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+        }
+
+        #unity-progress-bar-empty {
+            width: 300px;
+            height: 20px;
+            background: #444;
+            border-radius: 4px;
+        }
+
+        #unity-progress-bar-full {
+            width: 0%;
+            height: 100%;
+            background: #37c;
+            border-radius: 4px;
+        }
+    </style>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+    <div id="unity-container">
+        <canvas id="unity-canvas"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Unity loader bootstrap (matches default Unity WebGL template) ---
+        const buildUrl = "Build";
+        const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+        const config = {
+            dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+            frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+            #if USE_THREADS
+            workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+            #endif
+    #if USE_WASM
+            codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+            #endif
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "{{{ COMPANY_NAME }}}",
+            productName: "{{{ PRODUCT_NAME }}}",
+            productVersion: "{{{ PRODUCT_VERSION }}}",
+        };
+
+        const canvas = document.querySelector("#unity-canvas");
+        const loadingBar = document.querySelector("#unity-loading-bar");
+        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+
+        loadingBar.style.display = "block";
+
+        const script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                progressBarFull.style.width = (100 * progress) + "%";
+            }).then((instance) => {
+                loadingBar.style.display = "none";
+
+                // Capture the Unity canvas as a MediaStream for viewers (video only)
+                let canvasStream = null;
+                if (canvas.captureStream) {
+                    canvasStream = canvas.captureStream(30); // 30 FPS
+                    console.log('[PeerJS] Canvas captureStream started');
+                } else {
+                    console.warn('canvas.captureStream is not supported in this browser.');
+                }
+
+                setupPeer(instance, canvasStream);
+            }).catch((message) => {
+                alert(message);
+            });
+        };
+        document.body.appendChild(script);
+
+        // --- PeerJS wiring ---
+        let peer = null;
+        let conn = null;
+
+        function setupPeer(unityInstance, canvasStream) {
+            // Host (Unity game) uses a fixed ID so viewers can connect to "game-host"
+            // and connects to the local PeerJS server on localhost:9000/myapp.
+            peer = new Peer('game-host', {
+                host: 'localhost',
+                port: 9000,
+                path: '/myapp',
+                secure: false
+            });
+
+            peer.on('open', (id) => {
+                console.log('[PeerJS] Ready with ID:', id);
+                // Also log into Unity console
+                try {
+                    unityInstance.SendMessage('PeerManager', 'OnPeerReady', id);
+                } catch (e) {
+                    console.warn('Failed to notify Unity about PeerJS ready state:', e);
+                }
+            });
+
+            peer.on('connection', (c) => {
+                conn = c;
+                console.log('[PeerJS] Data connection received from', c.peer);
+
+                c.on('data', (data) => {
+                    // JS → Unity
+                    unityInstance.SendMessage('PeerManager', 'OnPeerMessage', JSON.stringify(data));
+                });
+
+                c.on('close', () => {
+                    console.log('[PeerJS] Data connection closed', c.peer);
+                    if (conn === c) {
+                        conn = null;
+                    }
+                });
+
+                // As soon as we have a data connection to a viewer,
+                // start a media call to that viewer with our canvas stream.
+                if (canvasStream) {
+                    console.log('[PeerJS] Starting media call to viewer', c.peer);
+                    const mediaCall = peer.call(c.peer, canvasStream);
+                    mediaCall.on('close', () => {
+                        console.log('[PeerJS] Media call closed with', c.peer);
+                    });
+                    mediaCall.on('error', (err) => {
+                        console.error('[PeerJS] Media call error with', c.peer, err);
+                    });
+                } else {
+                    console.warn('[PeerJS] No canvas stream available to start media call.');
+                }
+            });
+
+            peer.on('error', (err) => {
+                console.error('[PeerJS] Error:', err);
+            });
+        }
+
+        // Unity → JS entry point (called via [DllImport("__Internal")] in C#)
+        // Must be global so Unity can find it.
+        function SendToPeerFromUnity(message) {
+            if (conn && conn.open) {
+                conn.send(message);
+            } else {
+                console.warn('[PeerJS] No open connection; message not sent:', message);
+            }
+        }
+        window.SendToPeerFromUnity = SendToPeerFromUnity;
+    </script>
+</body>
+
+</html>
