@@ -71,6 +71,7 @@ public class Monster : MonoBehaviour
             if (Random.Range(0f, 100f) <= item.dropChance)
             {
                 Instantiate(item.prefab, transform.position, Quaternion.identity);
+                break;
             }
         }
 
