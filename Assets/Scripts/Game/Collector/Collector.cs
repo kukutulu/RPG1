@@ -11,8 +11,7 @@ public class Collector : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        ICollectible collectible = collision.GetComponent<ICollectible>();
-        if (collectible != null)
+        if (collision.TryGetComponent<ICollectible>(out var collectible))
         {
             audioManager.PlaySFX(audioManager.pickItem);
             collectible.Collect();
