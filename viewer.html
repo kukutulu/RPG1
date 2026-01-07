@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Viewer - Watch game-host</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #controls {
+      padding: 8px;
+      background: #222;
+      border-bottom: 1px solid #333;
+    }
+
+    #startBtn {
+      padding: 6px 12px;
+      background: #3a7bfd;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #startBtn:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    #video-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    video {
+      max-width: 100%;
+      max-height: 100%;
+      background: #000;
+    }
+
+    #log {
+      height: 120px;
+      overflow-y: auto;
+      font-size: 12px;
+      background: #222;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="controls">
+    <button id="startBtn" disabled>Start watching</button>
+  </div>
+  <div id="video-container">
+    <video id="remoteVideo" autoplay playsinline></video>
+  </div>
+  <pre id="log"></pre>
+
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+  <script>
+    const video = document.getElementById('remoteVideo');
+    const logEl = document.getElementById('log');
+    const startBtn = document.getElementById('startBtn');
+
+    let pendingStream = null;
+
+    function log(msg) {
+      console.log(msg);
+      logEl.textContent += msg + '\n';
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // Viewer connects to the same PeerJS server and:
+    // 1) opens a data connection to "game-host" so the host knows this viewer exists
+    // 2) waits for the host to start a media call and answers it
+    const peer = new Peer(null, {
+      host: 'localhost',
+      port: 9000,
+      path: '/myapp',
+      secure: false
+    });
+
+    peer.on('open', id => {
+      log('Viewer Peer ID: ' + id);
+
+      log('Opening data connection to game-host...');
+      const conn = peer.connect('game-host');
+
+      conn.on('open', () => {
+        log('Data connection to game-host opened');
+        // Optional: send a small message so host knows this viewer is ready
+        conn.send({ type: 'viewer-hello', viewerId: id });
+      });
+
+      conn.on('error', err => {
+        log('Data connection error: ' + err);
+      });
+
+      conn.on('close', () => {
+        log('Data connection closed');
+      });
+    });
+
+    // Host will initiate the media call; viewer just answers and shows the stream
+    peer.on('call', call => {
+      log('Incoming media call from ' + call.peer + ', answering...');
+      call.answer(null); // no local media to send back
+
+      call.on('stream', remoteStream => {
+        log('Received remote stream from game-host');
+        pendingStream = remoteStream;
+        video.srcObject = remoteStream;
+        startBtn.disabled = false;
+      });
+
+      call.on('error', err => {
+        log('Call error: ' + err);
+      });
+
+      call.on('close', () => {
+        log('Call closed');
+      });
+    });
+
+    // User gesture to actually start playback (avoids autoplay restrictions)
+    startBtn.addEventListener('click', () => {
+      if (!pendingStream) {
+        log('No stream received yet from host.');
+        return;
+      }
+      startBtn.disabled = true;
+      video.muted = true; // helps some browsers allow autoplay
+      video.play().catch(err => {
+        log('Video play error: ' + err);
+        startBtn.disabled = false;
+      });
+    });
+
+    peer.on('error', err => {
+      log('Peer error: ' + err);
+    });
+  </script>
+</body>
+
+</html>
