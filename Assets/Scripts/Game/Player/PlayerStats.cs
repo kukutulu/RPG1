@@ -1,4 +1,5 @@
 ﻿
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
@@ -45,6 +46,12 @@ public class PlayerStats : MonoBehaviour
     public float KnockbackForce { get { return knockbackForce; } }
     public float StunTime { get { return stunTime; } }
 
+    private void Start()
+    {
+        HeartItem.OnHeartItemCollected += Heal;
+        AtkPotion.OnAtkPotionCollected += BoostAtk;
+    }
+
 
     public void Heal(float health)
     {
@@ -81,6 +88,11 @@ public class PlayerStats : MonoBehaviour
 
         if (onHealthChangedCallback != null)
             onHealthChangedCallback.Invoke();
+    }
+
+    void BoostAtk(float amount)
+    {
+        damage += amount;
     }
 
     void Die()
