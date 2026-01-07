@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Monster : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Monster : MonoBehaviour
     private bool isKnockback = false;
     private bool isDead = false;
     private AIChase AIChase;
+    public List<LootItem> lootTable = new List<LootItem>();
 
     public delegate void MonsterDead(float exp);
     public static event MonsterDead OnMonsterDead;
@@ -63,6 +65,15 @@ public class Monster : MonoBehaviour
         // Destroy after animation plays
         animator.SetBool("isDead", true);
 
+        // Drop items
+        foreach (LootItem item in lootTable)
+        {
+            if (Random.Range(0f, 100f) <= item.dropChance)
+            {
+                Instantiate(item.prefab, transform.position, Quaternion.identity);
+            }
+        }
+
         // Disable components to prevent interaction
         if (rb != null) rb.simulated = false;
         if (healthBar != null) healthBar.gameObject.SetActive(false);
@@ -90,8 +101,8 @@ public class Monster : MonoBehaviour
 
     IEnumerator PlayHurtAnimation()
     {
-    animator.SetBool("isHurt", true);
-    yield return new WaitForSeconds(0.5f);
-    animator.SetBool("isHurt", false);
+        animator.SetBool("isHurt", true);
+        yield return new WaitForSeconds(0.5f);
+        animator.SetBool("isHurt", false);
     }
 }

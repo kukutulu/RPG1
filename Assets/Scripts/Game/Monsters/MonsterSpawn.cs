@@ -5,6 +5,8 @@ public class MonsterSpawn : MonoBehaviour
 {
     [SerializeField] private GameObject mushroomPrefab;
     [SerializeField] private float mushroomSpawnInterval = 5f;
+    [SerializeField] private int maxEnemy = 10;
+    private int currEnemy = 10;
 
     private void Start()
     {

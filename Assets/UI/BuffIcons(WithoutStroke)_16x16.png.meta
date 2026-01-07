@@ -131,10 +131,10 @@ TextureImporter:
       name: BuffIcons(WithoutStroke)_16x16_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 49
-        width: 15
-        height: 13
+        x: 0
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,10 +153,10 @@ TextureImporter:
       name: BuffIcons(WithoutStroke)_16x16_1
       rect:
         serializedVersion: 2
-        x: 17
-        y: 49
-        width: 15
-        height: 13
+        x: 16
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,9 +176,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 50
+        y: 48
         width: 16
-        height: 12
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -197,10 +197,10 @@ TextureImporter:
       name: BuffIcons(WithoutStroke)_16x16_3
       rect:
         serializedVersion: 2
-        x: 49
-        y: 50
-        width: 14
-        height: 12
+        x: 48
+        y: 48
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -220,41 +220,19 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 38
-        width: 7
-        height: 8
+        y: 32
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b6a5bd9dcc71b7ba0800000000000000
+      spriteID: bb43b77bf3f37df42aa7c478070eb051
       internalID: -6090247902492665237
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: BuffIcons(WithoutStroke)_16x16_5
-      rect:
-        serializedVersion: 2
-        x: 4
-        y: 33
-        width: 12
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0385287a3b63b4920800000000000000
-      internalID: 2975532124045727792
       vertices: []
       indices: 
       edges: []
@@ -263,7 +241,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: ddcee9dbb1f991a41bff6072ae067dcb
     internalID: 0
     vertices: []
     indices: 
@@ -278,7 +256,6 @@ TextureImporter:
       BuffIcons(WithoutStroke)_16x16_2: 733094452552446145
       BuffIcons(WithoutStroke)_16x16_3: -2595842882760938161
       BuffIcons(WithoutStroke)_16x16_4: -6090247902492665237
-      BuffIcons(WithoutStroke)_16x16_5: 2975532124045727792
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
