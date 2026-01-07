@@ -9,6 +9,8 @@ public class PlayerStats : MonoBehaviour
 
     #region Sigleton
     private static PlayerStats instance;
+
+    [System.Obsolete]
     public static PlayerStats Instance
     {
         get
@@ -50,6 +52,7 @@ public class PlayerStats : MonoBehaviour
     {
         HeartItem.OnHeartItemCollected += Heal;
         AtkPotion.OnAtkPotionCollected += BoostAtk;
+        SpeedPotion.OnSpeedPotionCollected += BoostSpeed;
     }
 
 
@@ -93,6 +96,11 @@ public class PlayerStats : MonoBehaviour
     void BoostAtk(float amount)
     {
         damage += amount;
+    }
+
+    void BoostSpeed(float percent)
+    {
+        speed += 0.1f;
     }
 
     void Die()

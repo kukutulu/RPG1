@@ -594,8 +594,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mushroomPrefab: {fileID: 5081165855967982702, guid: 9330c68ad9ea3f6419008c6a9c58faad,
     type: 3}
-  mushroomSpawnInterval: 8
-  maxEnemy: 10
+  mushroomSpawnInterval: 5
+  maxEnemy: 15
 --- !u!4 &340207433
 Transform:
   m_ObjectHideFlags: 0
@@ -10976,7 +10976,7 @@ MonoBehaviour:
   background: {fileID: 8300000, guid: 0ad591428b0c18c4da51fe3bf98dbc63, type: 3}
   playerHit: {fileID: 8300000, guid: 15f70875cb528d34fba19da97a9a643c, type: 3}
   powerUp: {fileID: 8300000, guid: 89162e698c87f4f40bef15dd43649332, type: 3}
-  pickItem: {fileID: 0}
+  pickItem: {fileID: 8300000, guid: 83b2f8468c57d024d98410350da75bcf, type: 3}
 --- !u!4 &1588669739
 Transform:
   m_ObjectHideFlags: 0
