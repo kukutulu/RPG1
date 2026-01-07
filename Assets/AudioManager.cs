@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip background;
     public AudioClip playerHit;
     public AudioClip powerUp;
+    public AudioClip pickItem;
 
     private void Start()
     {

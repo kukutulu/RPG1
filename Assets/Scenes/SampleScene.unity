@@ -594,7 +594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mushroomPrefab: {fileID: 5081165855967982702, guid: 9330c68ad9ea3f6419008c6a9c58faad,
     type: 3}
-  mushroomSpawnInterval: 5
+  mushroomSpawnInterval: 10
   maxEnemy: 10
 --- !u!4 &340207433
 Transform:

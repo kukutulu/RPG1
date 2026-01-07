@@ -148,14 +148,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5398549200601034807}
+  - component: {fileID: 3307746899533030626}
+  - component: {fileID: 7877201694165449780}
+  - component: {fileID: 3635917462700825331}
   - component: {fileID: 8465166821523061082}
   - component: {fileID: 2326299156055325303}
   - component: {fileID: 8226018500472274952}
   - component: {fileID: 5312716918308008161}
   - component: {fileID: 1507032288284589620}
-  - component: {fileID: 3307746899533030626}
-  - component: {fileID: 7877201694165449780}
-  - component: {fileID: 3635917462700825331}
   m_Layer: 7
   m_Name: Mushroom
   m_TagString: Untagged
@@ -180,6 +180,72 @@ Transform:
   - {fileID: 9008768836750022577}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3307746899533030626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5081165855967982702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 608d16f3f32262647b47e251cce7e09c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  speed: 1
+  attackRange: 1.5
+  chaseRange: 6
+  animator: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  spriteFacesRightByDefault: 1
+--- !u!114 &7877201694165449780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5081165855967982702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74d2ba4eb1deb4644b15a7245500655e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 1
+  attackPoint: {fileID: 8601934848923767222}
+  attackRange: 1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  knockbackForce: 2
+  stunTime: 1
+--- !u!114 &3635917462700825331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5081165855967982702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b411fe3a4c06a6d4d91f7f8ec32b833f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 2326299156055325303}
+  healthBar: {fileID: 3126894971745319852}
+  health: 1
+  maxHealth: 1
+  exp: 50
+  lootTable:
+  - prefab: {fileID: 3301490656788199777, guid: 4b563c1c458b12648addcd35263a1893,
+      type: 3}
+    dropChance: 40
+  - prefab: {fileID: 5097856581337081492, guid: 9af1f6d9b24527c45869f700fe576a37,
+      type: 3}
+    dropChance: 20
+  - prefab: {fileID: 7113923977915076886, guid: 0994ab7ebeb45544aa62fe876592567d,
+      type: 3}
+    dropChance: 40
 --- !u!212 &8465166821523061082
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -356,63 +422,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: -2.1155047, y: -0.47392237}
-  m_Radius: 3.7101626
---- !u!114 &3307746899533030626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5081165855967982702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 608d16f3f32262647b47e251cce7e09c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  speed: 1
-  attackRange: 1.5
-  chaseRange: 6
-  animator: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  spriteFacesRightByDefault: 1
---- !u!114 &7877201694165449780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5081165855967982702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74d2ba4eb1deb4644b15a7245500655e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 1
-  attackPoint: {fileID: 8601934848923767222}
-  attackRange: 1
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  knockbackForce: 2
-  stunTime: 1
---- !u!114 &3635917462700825331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5081165855967982702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b411fe3a4c06a6d4d91f7f8ec32b833f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 2326299156055325303}
-  healthBar: {fileID: 3126894971745319852}
-  health: 1
-  maxHealth: 1
-  exp: 50
+  m_Radius: 10
 --- !u!1 &5879864535055733673
 GameObject:
   m_ObjectHideFlags: 0
