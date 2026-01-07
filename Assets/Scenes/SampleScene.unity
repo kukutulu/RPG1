@@ -652,6 +652,16 @@ MonoBehaviour:
   health: 1
   maxHealth: 1
   exp: 50
+  lootTable:
+  - prefab: {fileID: 3301490656788199777, guid: 4b563c1c458b12648addcd35263a1893,
+      type: 3}
+    dropChance: 33
+  - prefab: {fileID: 5097856581337081492, guid: 9af1f6d9b24527c45869f700fe576a37,
+      type: 3}
+    dropChance: 33
+  - prefab: {fileID: 7113923977915076886, guid: 0994ab7ebeb45544aa62fe876592567d,
+      type: 3}
+    dropChance: 33
 --- !u!58 &353346484
 CircleCollider2D:
   m_ObjectHideFlags: 0
