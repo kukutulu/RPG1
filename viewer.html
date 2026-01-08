@@ -19,9 +19,12 @@
       padding: 8px;
       background: #222;
       border-bottom: 1px solid #333;
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
 
-    #startBtn {
+    button {
       padding: 6px 12px;
       background: #3a7bfd;
       color: #fff;
@@ -31,9 +34,21 @@
       font-size: 14px;
     }
 
-    #startBtn:disabled {
+    button:disabled {
       opacity: 0.5;
       cursor: default;
+    }
+
+    button:hover:not(:disabled) {
+      background: #2d6be0;
+    }
+
+    #spawnBtn {
+      background: #e74c3c;
+    }
+
+    #spawnBtn:hover:not(:disabled) {
+      background: #c0392b;
     }
 
     #video-container {
@@ -64,6 +79,7 @@
 <body>
   <div id="controls">
     <button id="startBtn" disabled>Start watching</button>
+    <button id="spawnBtn" disabled>Spawn Monster</button>
   </div>
   <div id="video-container">
     <video id="remoteVideo" autoplay playsinline></video>
@@ -75,8 +91,10 @@
     const video = document.getElementById('remoteVideo');
     const logEl = document.getElementById('log');
     const startBtn = document.getElementById('startBtn');
+    const spawnBtn = document.getElementById('spawnBtn');
 
     let pendingStream = null;
+    let dataConnection = null;
 
     function log(msg) {
       console.log(msg);
@@ -98,20 +116,26 @@
       log('Viewer Peer ID: ' + id);
 
       log('Opening data connection to game-host...');
-      const conn = peer.connect('game-host');
+      dataConnection = peer.connect('game-host');
 
-      conn.on('open', () => {
+      dataConnection.on('open', () => {
         log('Data connection to game-host opened');
-        // Optional: send a small message so host knows this viewer is ready
-        conn.send({ type: 'viewer-hello', viewerId: id });
+        spawnBtn.disabled = false;
+        // Send a small message so host knows this viewer is ready
+        dataConnection.send({ type: 'viewer-hello', viewerId: id });
       });
 
-      conn.on('error', err => {
+      dataConnection.on('error', err => {
         log('Data connection error: ' + err);
       });
 
-      conn.on('close', () => {
+      dataConnection.on('close', () => {
         log('Data connection closed');
+        spawnBtn.disabled = true;
+      });
+
+      dataConnection.on('data', data => {
+        log('Received data from host: ' + JSON.stringify(data));
       });
     });
 
@@ -148,6 +172,26 @@
         log('Video play error: ' + err);
         startBtn.disabled = false;
       });
+    });
+
+    // Spawn monster button
+    spawnBtn.addEventListener('click', () => {
+      if (!dataConnection || !dataConnection.open) {
+        log('Data connection not open. Cannot spawn monster.');
+        return;
+      }
+
+      // Send spawn command to Unity game
+      // x and y are null (random), but you can set them if you want specific positions
+      const spawnCommand = {
+        type: 'spawn-monster',
+        viewerId: peer.id,
+        x: null,  // null = random position
+        y: null   // null = random position
+      };
+
+      dataConnection.send(spawnCommand);
+      log('Sent spawn monster command to game-host');
     });
 
     peer.on('error', err => {
