@@ -572,7 +572,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 27.900024, y: -7.9}
+  m_AnchoredPosition: {x: 27.900024, y: -7.9000244}
   m_SizeDelta: {x: 53.790848, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &297324075
@@ -705,7 +705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mushroomPrefab: {fileID: 5081165855967982702, guid: 9330c68ad9ea3f6419008c6a9c58faad,
     type: 3}
-  mushroomSpawnInterval: 10000
+  mushroomSpawnInterval: 7
   maxEnemy: 15
 --- !u!4 &340207433
 Transform:
