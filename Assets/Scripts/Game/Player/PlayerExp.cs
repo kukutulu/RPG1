@@ -47,6 +47,7 @@ public class PlayerExp : MonoBehaviour
         currentExp = 0;
         slider.value = currentExp / requiredExp;
         levelText.text = "Level: " + level;
+        PlayerStats.Instance.LevelUp();
     }
 
     public void GainExp(float exp)

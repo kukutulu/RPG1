@@ -1,4 +1,5 @@
 ﻿
+using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ public class PlayerStats : MonoBehaviour
 
     #region Sigleton
     private static PlayerStats instance;
+    [SerializeField] private SpriteRenderer spriteRendererLevelUp;
+    [SerializeField] private string levelUpChildName = "LevelUp"; // Name of the child GameObject with the level up sprite
+    [SerializeField] private float levelUpDisplayDuration = 0.8f; // How long to show the level up sprite (0 = don't auto-hide)
 
     [System.Obsolete]
     public static PlayerStats Instance
@@ -50,9 +54,36 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
+        GetLevelUpSprite();
         HeartItem.OnHeartItemCollected += Heal;
         AtkPotion.OnAtkPotionCollected += BoostAtk;
         SpeedPotion.OnSpeedPotionCollected += BoostSpeed;
+    }
+
+    private void GetLevelUpSprite()
+    {
+        if (spriteRendererLevelUp == null)
+        {
+            Transform levelUpChild = transform.Find(levelUpChildName);
+            if (levelUpChild != null)
+            {
+                spriteRendererLevelUp = levelUpChild.GetComponent<SpriteRenderer>();
+            }
+
+            if (spriteRendererLevelUp == null)
+            {
+                spriteRendererLevelUp = GetComponentInChildren<SpriteRenderer>();
+            }
+        }
+
+        if (spriteRendererLevelUp != null)
+        {
+            spriteRendererLevelUp.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerStats: Level Up SpriteRenderer not found! Make sure to assign it in the inspector or name the child GameObject '" + levelUpChildName + "'");
+        }
     }
 
 
@@ -101,6 +132,33 @@ public class PlayerStats : MonoBehaviour
     void BoostSpeed(float percent)
     {
         speed += 0.1f;
+    }
+
+    public void LevelUp()
+    {
+        if (spriteRendererLevelUp != null)
+        {
+            spriteRendererLevelUp.gameObject.SetActive(true);
+
+            // Auto-deactivate after duration if specified
+            if (levelUpDisplayDuration > 0f)
+            {
+                StartCoroutine(HideLevelUpSpriteAfterDelay(levelUpDisplayDuration));
+            }
+        }
+        else
+        {
+            Debug.LogWarning("PlayerStats: Cannot activate level up sprite - SpriteRenderer is null!");
+        }
+    }
+
+    private IEnumerator HideLevelUpSpriteAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (spriteRendererLevelUp != null)
+        {
+            spriteRendererLevelUp.gameObject.SetActive(false);
+        }
     }
 
     void Die()
