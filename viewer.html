@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Viewer - Watch game-host</title>
+  <title>Viewer - Watch Game</title>
   <style>
     body {
       margin: 0;
@@ -13,6 +13,64 @@
       display: flex;
       flex-direction: column;
       height: 100vh;
+    }
+
+    #room-selector {
+      padding: 12px;
+      background: #222;
+      border-bottom: 1px solid #333;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    #room-selector label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #roomCodeInput {
+      padding: 6px 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: #333;
+      color: #fff;
+      font-size: 14px;
+      width: 120px;
+      text-transform: uppercase;
+    }
+
+    #roomCodeInput:focus {
+      outline: none;
+      border-color: #3a7bfd;
+    }
+
+    #connectBtn {
+      background: #27ae60;
+    }
+
+    #connectBtn:hover:not(:disabled) {
+      background: #229954;
+    }
+
+    #disconnectBtn {
+      background: #e67e22;
+      display: none;
+    }
+
+    #disconnectBtn:hover:not(:disabled) {
+      background: #d35400;
+    }
+
+    #room-status {
+      margin-left: auto;
+      font-size: 12px;
+      color: #999;
+    }
+
+    #room-status.connected {
+      color: #27ae60;
     }
 
     #controls {
@@ -77,6 +135,13 @@
 </head>
 
 <body>
+  <div id="room-selector">
+    <label for="roomCodeInput">Room Code:</label>
+    <input type="text" id="roomCodeInput" placeholder="ABC123" maxlength="6" />
+    <button id="connectBtn">Connect</button>
+    <button id="disconnectBtn">Disconnect</button>
+    <div id="room-status">Not connected</div>
+  </div>
   <div id="controls">
     <button id="startBtn" disabled>Start watching</button>
     <button id="spawnBtn" disabled>Spawn Monster</button>
@@ -92,9 +157,16 @@
     const logEl = document.getElementById('log');
     const startBtn = document.getElementById('startBtn');
     const spawnBtn = document.getElementById('spawnBtn');
+    const roomCodeInput = document.getElementById('roomCodeInput');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const roomStatus = document.getElementById('room-status');
 
     let pendingStream = null;
     let dataConnection = null;
+    let peer = null;
+    let currentRoomCode = null;
+    let isConnected = false;
 
     function log(msg) {
       console.log(msg);
@@ -102,63 +174,226 @@
       logEl.scrollTop = logEl.scrollHeight;
     }
 
-    // Viewer connects to the same PeerJS server and:
-    // 1) opens a data connection to "game-host" so the host knows this viewer exists
-    // 2) waits for the host to start a media call and answers it
-    const peer = new Peer(null, {
-      host: 'localhost',
-      port: 9000,
-      path: '/myapp',
-      secure: false
-    });
+    /**
+     * Get room code from URL parameter or input field
+     */
+    function getRoomCode() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomParam = urlParams.get('room');
 
-    peer.on('open', id => {
-      log('Viewer Peer ID: ' + id);
+      if (roomParam && roomParam.trim() !== '') {
+        return roomParam.trim().toUpperCase();
+      }
 
-      log('Opening data connection to game-host...');
-      dataConnection = peer.connect('game-host');
+      return roomCodeInput.value.trim().toUpperCase();
+    }
+
+    /**
+     * Update room status display
+     */
+    function updateRoomStatus(connected, roomCode) {
+      if (connected) {
+        roomStatus.textContent = `Connected to room: ${roomCode}`;
+        roomStatus.classList.add('connected');
+        roomCodeInput.disabled = true;
+        connectBtn.style.display = 'none';
+        disconnectBtn.style.display = 'block';
+      } else {
+        roomStatus.textContent = 'Not connected';
+        roomStatus.classList.remove('connected');
+        roomCodeInput.disabled = false;
+        connectBtn.style.display = 'block';
+        disconnectBtn.style.display = 'none';
+      }
+    }
+
+    /**
+     * Initialize PeerJS (but don't connect yet)
+     */
+    function initializePeer() {
+      if (peer) {
+        peer.destroy();
+        peer = null;
+      }
+
+      // PeerJS configuration (can be customized via peerjs-config.js)
+      const config = window.PEERJS_CONFIG || {
+        host: 'localhost',
+        port: 9000,
+        path: '/myapp',
+        secure: false
+      };
+
+      peer = new Peer(null, config);
+
+      peer.on('open', id => {
+        log('Viewer Peer ID: ' + id);
+        // Don't auto-connect - wait for user to enter room code and click Connect
+      });
+
+      peer.on('error', err => {
+        log('Peer error: ' + err);
+        if (err.type === 'peer-unavailable') {
+          log('Room not found. Make sure the room code is correct and the host is online.');
+          updateRoomStatus(false, null);
+          isConnected = false;
+        }
+      });
+
+      // Host will initiate the media call; viewer just answers and shows the stream
+      peer.on('call', call => {
+        log('Incoming media call from ' + call.peer + ', answering...');
+        call.answer(null); // no local media to send back
+
+        call.on('stream', remoteStream => {
+          log(`Received remote stream from room ${currentRoomCode || 'unknown'}`);
+          pendingStream = remoteStream;
+          video.srcObject = remoteStream;
+          startBtn.disabled = false;
+        });
+
+        call.on('error', err => {
+          log('Call error: ' + err);
+        });
+
+        call.on('close', () => {
+          log('Call closed');
+          if (video.srcObject === pendingStream) {
+            video.srcObject = null;
+            startBtn.disabled = true;
+          }
+        });
+      });
+    }
+
+    /**
+     * Connect to a room
+     */
+    function connectToRoom(roomCode) {
+      if (!roomCode || roomCode.length !== 6) {
+        log('Invalid room code. Please enter a 6-character code (e.g., ABC123)');
+        return;
+      }
+
+      if (!peer || !peer.id) {
+        log('PeerJS not ready yet. Please wait...');
+        return;
+      }
+
+      if (isConnected) {
+        log('Already connected to a room. Disconnect first.');
+        return;
+      }
+
+      currentRoomCode = roomCode;
+      const hostPeerId = 'room-' + roomCode;
+
+      log(`Connecting to room: ${roomCode} (peer ID: ${hostPeerId})...`);
+      updateRoomStatus(false, roomCode);
+
+      // Close existing connection if any
+      if (dataConnection) {
+        dataConnection.close();
+        dataConnection = null;
+      }
+
+      // Open data connection to host
+      dataConnection = peer.connect(hostPeerId);
 
       dataConnection.on('open', () => {
-        log('Data connection to game-host opened');
+        log(`Connected to room ${roomCode}`);
+        isConnected = true;
+        updateRoomStatus(true, roomCode);
         spawnBtn.disabled = false;
+
         // Send a small message so host knows this viewer is ready
-        dataConnection.send({ type: 'viewer-hello', viewerId: id });
+        dataConnection.send({
+          type: 'viewer-hello',
+          viewerId: peer.id,
+          roomCode: roomCode
+        });
       });
 
       dataConnection.on('error', err => {
         log('Data connection error: ' + err);
+        updateRoomStatus(false, roomCode);
+        isConnected = false;
+        spawnBtn.disabled = true;
       });
 
       dataConnection.on('close', () => {
         log('Data connection closed');
+        isConnected = false;
+        updateRoomStatus(false, roomCode);
         spawnBtn.disabled = true;
+        startBtn.disabled = true;
+        if (video.srcObject) {
+          video.srcObject = null;
+        }
       });
 
       dataConnection.on('data', data => {
         log('Received data from host: ' + JSON.stringify(data));
       });
+    }
+
+    /**
+     * Disconnect from current room
+     */
+    function disconnectFromRoom() {
+      if (dataConnection) {
+        dataConnection.close();
+        dataConnection = null;
+      }
+
+      if (pendingStream) {
+        pendingStream = null;
+      }
+
+      if (video.srcObject) {
+        video.srcObject = null;
+      }
+
+      isConnected = false;
+      currentRoomCode = null;
+      updateRoomStatus(false, null);
+      spawnBtn.disabled = true;
+      startBtn.disabled = true;
+
+      log('Disconnected from room');
+    }
+
+    // Initialize PeerJS on page load
+    initializePeer();
+
+    // Get room code from URL if present
+    const urlRoomCode = new URLSearchParams(window.location.search).get('room');
+    if (urlRoomCode) {
+      roomCodeInput.value = urlRoomCode.trim().toUpperCase();
+    }
+
+    // Connect button
+    connectBtn.addEventListener('click', () => {
+      const roomCode = getRoomCode();
+      if (roomCode) {
+        connectToRoom(roomCode);
+      } else {
+        log('Please enter a room code');
+      }
     });
 
-    // Host will initiate the media call; viewer just answers and shows the stream
-    peer.on('call', call => {
-      log('Incoming media call from ' + call.peer + ', answering...');
-      call.answer(null); // no local media to send back
-
-      call.on('stream', remoteStream => {
-        log('Received remote stream from game-host');
-        pendingStream = remoteStream;
-        video.srcObject = remoteStream;
-        startBtn.disabled = false;
-      });
-
-      call.on('error', err => {
-        log('Call error: ' + err);
-      });
-
-      call.on('close', () => {
-        log('Call closed');
-      });
+    // Disconnect button
+    disconnectBtn.addEventListener('click', () => {
+      disconnectFromRoom();
     });
+
+    // Allow Enter key to connect
+    roomCodeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !roomCodeInput.disabled) {
+        connectBtn.click();
+      }
+    });
+
 
     // User gesture to actually start playback (avoids autoplay restrictions)
     startBtn.addEventListener('click', () => {
@@ -181,21 +416,23 @@
         return;
       }
 
+      if (!isConnected) {
+        log('Not connected to a room. Cannot spawn monster.');
+        return;
+      }
+
       // Send spawn command to Unity game
       // x and y are null (random), but you can set them if you want specific positions
       const spawnCommand = {
         type: 'spawn-monster',
         viewerId: peer.id,
+        roomCode: currentRoomCode,
         x: null,  // null = random position
         y: null   // null = random position
       };
 
       dataConnection.send(spawnCommand);
-      log('Sent spawn monster command to game-host');
-    });
-
-    peer.on('error', err => {
-      log('Peer error: ' + err);
+      log(`Sent spawn monster command to room ${currentRoomCode}`);
     });
   </script>
 </body>

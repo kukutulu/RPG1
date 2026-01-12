@@ -87,6 +87,28 @@ public class PeerManager : MonoBehaviour
         Debug.Log($"[PeerJS] Ready with ID: {peerId}");
     }
 
+    /// <summary>
+    /// Called from JS when the room is ready (room ID has been set).
+    /// </summary>
+    /// <param name="roomId">The room ID for this game session.</param>
+    public void OnRoomReady(string roomId)
+    {
+        Debug.Log($"[Room] Room ready with ID: {roomId}");
+        // You can store room ID here if needed for game logic
+    }
+
+    /// <summary>
+    /// Get the current room ID (called from JS, stored in Unity).
+    /// This is a placeholder - in a real implementation, you might want to store roomId
+    /// in a variable and expose it via a property.
+    /// </summary>
+    public string GetRoomId()
+    {
+        // This would return the room ID if stored
+        // For now, this is just a placeholder
+        return "unknown";
+    }
+
 
     // --- Unity → JS bridge (we only wire the C# side here) ---
 
