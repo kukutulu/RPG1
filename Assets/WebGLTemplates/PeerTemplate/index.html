@@ -1,350 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"
+    />
     <title>Unity WebGL with PeerJS</title>
     <style>
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #1b1b1b;
-        }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #1b1b1b;
+      }
 
-        #unity-container {
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
+      #unity-container {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
 
-        #unity-canvas {
-            width: 100%;
-            height: 100%;
-            background: #231F20;
-        }
+      #unity-canvas {
+        width: 100%;
+        height: 100%;
+        background: #231f20;
+      }
 
-        #unity-loading-bar {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-        }
+      #unity-loading-bar {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+      }
 
-        #unity-progress-bar-empty {
-            width: 300px;
-            height: 20px;
-            background: #444;
-            border-radius: 4px;
-        }
+      #unity-progress-bar-empty {
+        width: 300px;
+        height: 20px;
+        background: #444;
+        border-radius: 4px;
+      }
 
-        #unity-progress-bar-full {
-            width: 0%;
-            height: 100%;
-            background: #37c;
-            border-radius: 4px;
-        }
+      #unity-progress-bar-full {
+        width: 0%;
+        height: 100%;
+        background: #37c;
+        border-radius: 4px;
+      }
 
-        #room-info {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            z-index: 1000;
-            display: none;
-        }
+      #room-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        z-index: 1000;
+        display: none;
+      }
 
-        #room-info.show {
-            display: block;
-        }
+      #room-info.show {
+        display: block;
+      }
 
-        #room-code {
-            font-weight: bold;
-            font-size: 18px;
-            color: #37c;
-            margin-top: 5px;
-        }
+      #room-code {
+        font-weight: bold;
+        font-size: 18px;
+        color: #37c;
+        margin-top: 5px;
+      }
     </style>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="unity-container">
-        <canvas id="unity-canvas"></canvas>
-        <div id="unity-loading-bar">
-            <div id="unity-progress-bar-empty">
-                <div id="unity-progress-bar-full"></div>
-            </div>
+      <canvas id="unity-canvas"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
         </div>
-        <div id="room-info">
-            <div>Room Code:</div>
-            <div id="room-code">-</div>
-        </div>
+      </div>
+      <div id="room-info">
+        <div>Room Code:</div>
+        <div id="room-code">-</div>
+      </div>
     </div>
 
     <script>
-        // --- Unity loader bootstrap (matches default Unity WebGL template) ---
-        const buildUrl = "Build";
-        const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
-        const config = {
-            dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
-            frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
-            #if USE_THREADS
-            workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
-            #endif
-    #if USE_WASM
-            codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
-            #endif
-            streamingAssetsUrl: "StreamingAssets",
-            companyName: "{{{ COMPANY_NAME }}}",
-            productName: "{{{ PRODUCT_NAME }}}",
-            productVersion: "{{{ PRODUCT_VERSION }}}",
-        };
+          // --- Unity loader bootstrap (matches default Unity WebGL template) ---
+          const buildUrl = "Build";
+          const loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
+          const config = {
+              dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+              frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+              #if USE_THREADS
+              workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+              #endif
+      #if USE_WASM
+              codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+              #endif
+              streamingAssetsUrl: "StreamingAssets",
+              companyName: "{{{ COMPANY_NAME }}}",
+              productName: "{{{ PRODUCT_NAME }}}",
+              productVersion: "{{{ PRODUCT_VERSION }}}",
+          };
 
-        const canvas = document.querySelector("#unity-canvas");
-        const loadingBar = document.querySelector("#unity-loading-bar");
-        const progressBarFull = document.querySelector("#unity-progress-bar-full");
+          const canvas = document.querySelector("#unity-canvas");
+          const loadingBar = document.querySelector("#unity-loading-bar");
+          const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-        loadingBar.style.display = "block";
+          loadingBar.style.display = "block";
 
-        const script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-            createUnityInstance(canvas, config, (progress) => {
-                progressBarFull.style.width = (100 * progress) + "%";
-            }).then((instance) => {
-                loadingBar.style.display = "none";
+          const script = document.createElement("script");
+          script.src = loaderUrl;
+          script.onload = () => {
+              createUnityInstance(canvas, config, (progress) => {
+                  progressBarFull.style.width = (100 * progress) + "%";
+              }).then((instance) => {
+                  loadingBar.style.display = "none";
 
-                // Capture the Unity canvas as a MediaStream for viewers (video only)
-                let canvasStream = null;
-                if (canvas.captureStream) {
-                    canvasStream = canvas.captureStream(30); // 30 FPS
-                    console.log('[PeerJS] Canvas captureStream started');
-                } else {
-                    console.warn('canvas.captureStream is not supported in this browser.');
-                }
+                  // Capture the Unity canvas as a MediaStream for viewers (video only)
+                  let canvasStream = null;
+                  if (canvas.captureStream) {
+                      canvasStream = canvas.captureStream(30); // 30 FPS
+                      console.log('[PeerJS] Canvas captureStream started');
+                  } else {
+                      console.warn('canvas.captureStream is not supported in this browser.');
+                  }
 
-                setupPeer(instance, canvasStream);
-            }).catch((message) => {
-                alert(message);
-            });
-        };
-        document.body.appendChild(script);
+                  setupPeer(instance, canvasStream);
+              }).catch((message) => {
+                  alert(message);
+              });
+          };
+          document.body.appendChild(script);
 
-        // --- Room ID Management ---
+          // --- Room ID Management ---
 
-        /**
-         * Generate a random room ID (short code)
-         */
-        function generateRoomId() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude similar chars
-            let roomId = '';
-            for (let i = 0; i < 6; i++) {
-                roomId += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return roomId;
-        }
+          /**
+           * Generate a random room ID (short code)
+           */
+          function generateRoomId() {
+              const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Exclude similar chars
+              let roomId = '';
+              for (let i = 0; i < 6; i++) {
+                  roomId += chars.charAt(Math.floor(Math.random() * chars.length));
+              }
+              return roomId;
+          }
 
-        /**
-         * Get room ID from URL parameter or generate a new one
-         */
-        function getRoomId() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const roomParam = urlParams.get('room');
+          /**
+           * Get room ID from URL parameter or generate a new one
+           */
+          function getRoomId() {
+              const urlParams = new URLSearchParams(window.location.search);
+              const roomParam = urlParams.get('room');
 
-            if (roomParam && roomParam.trim() !== '') {
-                // Use room ID from URL parameter
-                const roomId = roomParam.trim().toUpperCase();
-                console.log('[Room] Using room ID from URL:', roomId);
-                return roomId;
-            } else {
-                // Generate a new room ID
-                const roomId = generateRoomId();
-                console.log('[Room] Generated new room ID:', roomId);
+              if (roomParam && roomParam.trim() !== '') {
+                  // Use room ID from URL parameter
+                  const roomId = roomParam.trim().toUpperCase();
+                  console.log('[Room] Using room ID from URL:', roomId);
+                  return roomId;
+              } else {
+                  // Generate a new room ID
+                  const roomId = generateRoomId();
+                  console.log('[Room] Generated new room ID:', roomId);
 
-                // Update URL with room ID (optional, doesn't reload page)
-                const newUrl = window.location.protocol + '//' + window.location.host +
-                    window.location.pathname + '?room=' + roomId;
-                window.history.replaceState({}, '', newUrl);
+                  // Update URL with room ID (optional, doesn't reload page)
+                  const newUrl = window.location.protocol + '//' + window.location.host +
+                      window.location.pathname + '?room=' + roomId;
+                  window.history.replaceState({}, '', newUrl);
 
-                return roomId;
-            }
-        }
+                  return roomId;
+              }
+          }
 
-        /**
-         * Display room code to user
-         */
-        function showRoomCode(roomId) {
-            const roomInfo = document.getElementById('room-info');
-            const roomCode = document.getElementById('room-code');
-            if (roomInfo && roomCode) {
-                roomCode.textContent = roomId;
-                roomInfo.classList.add('show');
-            }
-        }
+          /**
+           * Display room code to user
+           */
+          function showRoomCode(roomId) {
+              const roomInfo = document.getElementById('room-info');
+              const roomCode = document.getElementById('room-code');
+              if (roomInfo && roomCode) {
+                  roomCode.textContent = roomId;
+                  roomInfo.classList.add('show');
+              }
+          }
 
-        /**
-         * Register room with listing service (optional)
-         */
-        async function registerRoom(roomId, peerId) {
-            // Optional: Configure your room listing service URL here
-            const roomServiceUrl = window.ROOM_SERVICE_URL || null;
+          /**
+           * Register room with listing service (optional)
+           */
+          async function registerRoom(roomId, peerId) {
+              // Optional: Configure your room listing service URL here
+              const roomServiceUrl = window.ROOM_SERVICE_URL || null;
 
-            if (!roomServiceUrl) {
-                console.log('[Room] Room listing service not configured. Skipping registration.');
-                return;
-            }
+              if (!roomServiceUrl) {
+                  console.log('[Room] Room listing service not configured. Skipping registration.');
+                  return;
+              }
 
-            try {
-                const response = await fetch(roomServiceUrl + '/rooms', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        roomId: roomId,
-                        peerId: peerId,
-                        playerName: 'Player', // Could be customizable
-                        createdAt: new Date().toISOString()
-                    })
-                });
+              try {
+                  const response = await fetch(roomServiceUrl + '/rooms', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                          roomId: roomId,
+                          peerId: peerId,
+                          playerName: 'Player', // Could be customizable
+                          createdAt: new Date().toISOString()
+                      })
+                  });
 
-                if (response.ok) {
-                    console.log('[Room] Successfully registered room', roomId, 'with listing service');
-                } else {
-                    console.warn('[Room] Failed to register room with listing service:', response.status);
-                }
-            } catch (error) {
-                console.warn('[Room] Error registering room with listing service:', error);
-            }
-        }
+                  if (response.ok) {
+                      console.log('[Room] Successfully registered room', roomId, 'with listing service');
+                  } else {
+                      console.warn('[Room] Failed to register room with listing service:', response.status);
+                  }
+              } catch (error) {
+                  console.warn('[Room] Error registering room with listing service:', error);
+              }
+          }
 
-        // --- PeerJS wiring ---
-        let peer = null;
-        let connections = new Map(); // Track multiple viewer connections
-        let currentRoomId = null;
+          // --- PeerJS wiring ---
+          let peer = null;
+          let connections = new Map(); // Track multiple viewer connections
+          let currentRoomId = null;
 
-        function setupPeer(unityInstance, canvasStream) {
-            // Get or generate room ID
-            currentRoomId = getRoomId();
+          function setupPeer(unityInstance, canvasStream) {
+              // Get or generate room ID
+              currentRoomId = getRoomId();
 
-            // Display room code to user
-            showRoomCode(currentRoomId);
+              // Display room code to user
+              showRoomCode(currentRoomId);
 
-            // Use room ID as PeerJS peer ID (format: room-XXXXXX)
-            const peerId = 'room-' + currentRoomId;
+              // Use room ID as PeerJS peer ID (format: room-XXXXXX)
+              const peerId = 'room-' + currentRoomId;
 
-            // PeerJS configuration (can be customized via peerjs-config.js)
-            const peerConfig = window.PEERJS_CONFIG || {
-                host: 'localhost',
-                port: 9000,
-                path: '/myapp',
-                secure: false
-            };
+              // PeerJS configuration (can be customized via peerjs-config.js)
+              const peerConfig = window.PEERJS_CONFIG || {
+                  host: 'localhost',
+                  port: 9000,
+                  path: '/',
+                  secure: false
+              };
 
-            console.log('[PeerJS] Connecting with room ID:', currentRoomId, 'peer ID:', peerId);
-            peer = new Peer(peerId, peerConfig);
+              console.log('[PeerJS] Connecting with room ID:', currentRoomId, 'peer ID:', peerId);
+              peer = new Peer(peerId, peerConfig);
 
-            peer.on('open', (id) => {
-                console.log('[PeerJS] Ready with ID:', id, 'Room:', currentRoomId);
+              peer.on('open', (id) => {
+                  console.log('[PeerJS] Ready with ID:', id, 'Room:', currentRoomId);
 
-                // Optional: Register room with listing service
-                registerRoom(currentRoomId, id).catch(err => {
-                    console.warn('[Room] Registration error:', err);
-                });
+                  // Optional: Register room with listing service
+                  registerRoom(currentRoomId, id).catch(err => {
+                      console.warn('[Room] Registration error:', err);
+                  });
 
-                // Notify Unity about room ID and peer ID
-                try {
-                    unityInstance.SendMessage('PeerManager', 'OnPeerReady', id);
-                    unityInstance.SendMessage('PeerManager', 'OnRoomReady', currentRoomId);
-                } catch (e) {
-                    console.warn('Failed to notify Unity about PeerJS ready state:', e);
-                }
-            });
+                  // Notify Unity about room ID and peer ID
+                  try {
+                      unityInstance.SendMessage('PeerManager', 'OnPeerReady', id);
+                      unityInstance.SendMessage('PeerManager', 'OnRoomReady', currentRoomId);
+                  } catch (e) {
+                      console.warn('Failed to notify Unity about PeerJS ready state:', e);
+                  }
+              });
 
-            peer.on('connection', (c) => {
-                const viewerId = c.peer;
-                connections.set(viewerId, c);
-                console.log('[PeerJS] Data connection received from viewer:', viewerId, '(Total viewers:', connections.size, ')');
+              peer.on('connection', (c) => {
+                  const viewerId = c.peer;
+                  connections.set(viewerId, c);
+                  console.log('[PeerJS] Data connection received from viewer:', viewerId, '(Total viewers:', connections.size, ')');
 
-                c.on('data', (data) => {
-                    // JS → Unity
-                    unityInstance.SendMessage('PeerManager', 'OnPeerMessage', JSON.stringify(data));
-                });
+                  c.on('data', (data) => {
+                      // JS → Unity
+                      unityInstance.SendMessage('PeerManager', 'OnPeerMessage', JSON.stringify(data));
+                  });
 
-                c.on('close', () => {
-                    console.log('[PeerJS] Data connection closed from viewer:', viewerId);
-                    connections.delete(viewerId);
-                    console.log('[PeerJS] Remaining viewers:', connections.size);
-                });
+                  c.on('close', () => {
+                      console.log('[PeerJS] Data connection closed from viewer:', viewerId);
+                      connections.delete(viewerId);
+                      console.log('[PeerJS] Remaining viewers:', connections.size);
+                  });
 
-                c.on('error', (err) => {
-                    console.error('[PeerJS] Data connection error from viewer:', viewerId, err);
-                    connections.delete(viewerId);
-                });
+                  c.on('error', (err) => {
+                      console.error('[PeerJS] Data connection error from viewer:', viewerId, err);
+                      connections.delete(viewerId);
+                  });
 
-                // As soon as we have a data connection to a viewer,
-                // start a media call to that viewer with our canvas stream.
-                if (canvasStream) {
-                    console.log('[PeerJS] Starting media call to viewer', viewerId);
-                    const mediaCall = peer.call(viewerId, canvasStream);
-                    mediaCall.on('close', () => {
-                        console.log('[PeerJS] Media call closed with', viewerId);
-                    });
-                    mediaCall.on('error', (err) => {
-                        console.error('[PeerJS] Media call error with', viewerId, err);
-                    });
-                } else {
-                    console.warn('[PeerJS] No canvas stream available to start media call.');
-                }
-            });
+                  // As soon as we have a data connection to a viewer,
+                  // start a media call to that viewer with our canvas stream.
+                  if (canvasStream) {
+                      console.log('[PeerJS] Starting media call to viewer', viewerId);
+                      const mediaCall = peer.call(viewerId, canvasStream);
+                      mediaCall.on('close', () => {
+                          console.log('[PeerJS] Media call closed with', viewerId);
+                      });
+                      mediaCall.on('error', (err) => {
+                          console.error('[PeerJS] Media call error with', viewerId, err);
+                      });
+                  } else {
+                      console.warn('[PeerJS] No canvas stream available to start media call.');
+                  }
+              });
 
-            peer.on('error', (err) => {
-                console.error('[PeerJS] Error:', err);
-            });
-        }
+              peer.on('error', (err) => {
+                  console.error('[PeerJS] Error:', err);
+              });
+          }
 
-        // Unity → JS entry point (called via [DllImport("__Internal")] in C#)
-        // Must be global so Unity can find it.
-        // Broadcasts message to all connected viewers
-        function SendToPeerFromUnity(message) {
-            if (connections.size === 0) {
-                console.warn('[PeerJS] No connected viewers; message not sent:', message);
-                return;
-            }
+          // Unity → JS entry point (called via [DllImport("__Internal")] in C#)
+          // Must be global so Unity can find it.
+          // Broadcasts message to all connected viewers
+          function SendToPeerFromUnity(message) {
+              if (connections.size === 0) {
+                  console.warn('[PeerJS] No connected viewers; message not sent:', message);
+                  return;
+              }
 
-            let sentCount = 0;
-            connections.forEach((conn, viewerId) => {
-                if (conn && conn.open) {
-                    try {
-                        conn.send(message);
-                        sentCount++;
-                    } catch (err) {
-                        console.error('[PeerJS] Error sending to viewer', viewerId, ':', err);
-                    }
-                }
-            });
+              let sentCount = 0;
+              connections.forEach((conn, viewerId) => {
+                  if (conn && conn.open) {
+                      try {
+                          conn.send(message);
+                          sentCount++;
+                      } catch (err) {
+                          console.error('[PeerJS] Error sending to viewer', viewerId, ':', err);
+                      }
+                  }
+              });
 
-            if (sentCount === 0) {
-                console.warn('[PeerJS] No open connections; message not sent:', message);
-            } else {
-                console.log('[PeerJS] Message sent to', sentCount, 'viewer(s)');
-            }
-        }
-        window.SendToPeerFromUnity = SendToPeerFromUnity;
+              if (sentCount === 0) {
+                  console.warn('[PeerJS] No open connections; message not sent:', message);
+              } else {
+                  console.log('[PeerJS] Message sent to', sentCount, 'viewer(s)');
+              }
+          }
+          window.SendToPeerFromUnity = SendToPeerFromUnity;
     </script>
-</body>
-
+  </body>
 </html>
